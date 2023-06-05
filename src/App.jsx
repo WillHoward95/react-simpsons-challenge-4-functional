@@ -48,12 +48,52 @@ const App = () => {
     setSimpsons(_simpsons);
   };
 
-  setSearch = (e) => {
-    setSearch({ search: e.target.value });
+  const onSearch = (e) => {
+    setSearch(e.target.value);
   };
 
-  setSort = (e) => {
-    setSort({ sort: e.target.value });
+  const onSort = (e) => {
+    setSort(e.target.value);
+  };
+
+  const getFilteredList = (props) => {
+    let filteredList = [...simpsons];
+
+    if (search) {
+      filteredList = simpsons.filter((item) => {
+        console.log(item.quote, item.character, search);
+        if (
+          item.quote.toLowerCase().includes(search.toLowerCase()) ||
+          item.character.toLowerCase().includes(search.toLowerCase())
+        ) {
+          return true;
+        }
+      });
+    }
+
+    if (sort) {
+      filteredList = filteredList.sort((itemOne, itemTwo) => {
+        if (sort === "asc") {
+          if (itemOne.character < itemTwo.character) {
+            return -1;
+          }
+          if (itemOne.character > itemTwo.character) {
+            return 1;
+          }
+        } else if (sort === "desc") {
+          if (itemOne.character < itemTwo.character) {
+            return 1;
+          }
+          if (itemOne.character > itemTwo.character) {
+            return -1;
+          }
+        } else {
+          return;
+        }
+      });
+    }
+
+    return filteredList;
   };
 
   if (!simpsons) {
@@ -68,10 +108,10 @@ const App = () => {
   return (
     <>
       <h1>Total no of liked chars #{total}</h1>
-      <Inputs simpsons={simpsons} onSearch={setSearch} onSort={setSort} />
+      <Inputs simpsons={simpsons} onSearch={onSearch} onSort={onSort} />
 
       <Simpsons
-        simpsons={simpsons}
+        simpsons={getFilteredList()}
         onDelete={onDelete}
         toggleLiked={toggleLiked}
       />
