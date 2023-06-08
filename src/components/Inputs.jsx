@@ -1,10 +1,11 @@
+import Search from "./Search";
+
 const Inputs = (props) => {
-  const { onSort, onSearch } = props;
+  const { onSort, onSearch, search } = props;
   return (
     <>
       <p>
-        Search by quote or character:{" "}
-        <input type="text" name="search" id="search" onInput={onSearch} />
+        Search by character: <Search onSearch={onSearch} search={search} />
       </p>
       <p>
         Sort characters alphabetically by name:

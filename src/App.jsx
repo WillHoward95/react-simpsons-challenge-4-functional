@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Inputs from "./components/Inputs";
 import Simpsons from "./components/Simpsons";
@@ -6,13 +6,14 @@ import "./App.css";
 
 const App = () => {
   const [simpsons, setSimpsons] = useState();
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState("Homer");
   const [sort, setSort] = useState();
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
+    console.log("getData ran");
     try {
       const { data } = await axios.get(
-        `https://thesimpsonsquoteapi.glitch.me/quotes?count=50`
+        `https://thesimpsonsquoteapi.glitch.me/quotes?count=15&character=${search}`
       );
 
       data.forEach((element, index) => {
@@ -23,11 +24,11 @@ const App = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [search]);
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [getData]);
 
   const onDelete = (id) => {
     const indexOf = simpsons.findIndex((char) => {
@@ -58,18 +59,6 @@ const App = () => {
 
   const getFilteredList = (props) => {
     let filteredList = [...simpsons];
-
-    if (search) {
-      filteredList = simpsons.filter((item) => {
-        console.log(item.quote, item.character, search);
-        if (
-          item.quote.toLowerCase().includes(search.toLowerCase()) ||
-          item.character.toLowerCase().includes(search.toLowerCase())
-        ) {
-          return true;
-        }
-      });
-    }
 
     if (sort) {
       filteredList = filteredList.sort((itemOne, itemTwo) => {
@@ -108,7 +97,12 @@ const App = () => {
   return (
     <>
       <h1>Total no of liked chars #{total}</h1>
-      <Inputs simpsons={simpsons} onSearch={onSearch} onSort={onSort} />
+      <Inputs
+        simpsons={simpsons}
+        search={search}
+        onSearch={onSearch}
+        onSort={onSort}
+      />
 
       <Simpsons
         simpsons={getFilteredList()}
